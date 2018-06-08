@@ -1,15 +1,16 @@
 /*
  * Flip Dot Display
- * Description: Flip Dot Scrolling Message Board
+ * Description: Smart Flip Dot Clock
  * Author: Mariano Elia
  * Date: July 2018
  */
+
 #include <vector>
 #include <string>
 #include "Adafruit_Si7021.h"
-Adafruit_Si7021 tempAndHumiditySensor = Adafruit_Si7021();
-double h;
-double t;
+Adafruit_Si7021 Si7021 = Adafruit_Si7021();
+double humidityDouble, tempDouble;
+int humidityInt, tempInt;
 
 int scrollDelay = 80;
 
@@ -140,7 +141,7 @@ retained std::vector <char> modesArray;
 
 // Cloud functions
 int handleModes(String command);
-int showStatic(String message);
+int showStaticTxtTxt(String message);
 int scroll(String message);
 int wiggleText(String message);
 
@@ -154,38 +155,40 @@ void setup() {
   tempTimer.start();
   updateDisplay(); //clear the display
   initialTestSequence();
-  Serial.print("hello!!");
+  Serial.print("hello world!");
 
-tempAndHumiditySensor.begin();
+  Si7021.begin();
+
  // Cloud functions must return int and take one String
 //Particle.function("Modes", handleModes);
 Particle.function("Scrolling", scroll);
-Particle.function("Static", showStatic);
+Particle.function("Static", showStaticTxt);
 Particle.function("Wiggle", wiggleText);
-Particle.variable("Temp", t);
-//Particle.variable("Humidity", h);
+Particle.variable("Temp", tempDouble);
+Particle.variable("Humidity", humidityDouble);
+
 
 
 }
 
 int i = 0;
 void loop() {
-//scroll("HELLO");
  displayTime(12, -4);
  getTemperature();
  getHumidity();
- delay(3000);
- //showStatic("hello");
+ delay(10000);
+ displayTemp("quick");
  delay(1000);
+
  /*
   delay(1000);
 t = getTemperature();
 displayTemp("static");
 
 //delay(1000);
-showStatic("ghil");
+showStaticTxt("ghil");
 delay(1000);
-showStatic("asdfasldf");
+showStaticTxt("asdfasldf");
 //delay(3000);
 //scroll("ABCDEFGHJKIL");
 //delay(1000);
@@ -218,8 +221,7 @@ Serial.println("Finished");
 
 
 void displayTemp(String displayType){
-  t = getTemperature();
-  int tempInt = (int)t;
+  getTemperature(); //put
   String tempString = String(tempInt);
 
   if(displayType=="scrolling"){
@@ -230,27 +232,34 @@ void displayTemp(String displayType){
   Serial.println(tempString);
   int na = scroll(tempString);
 }
-
+else if(displayType=="quick"){
+  String tempString = "T:";
+  tempString.concat(tempInt);
+  showStaticTxt(tempString);
+  delay(2000);
+}
 else {
-  showStatic("The");
+  showStaticTxt("The");
   delay(600);
-  showStatic("Temp");
+  showStaticTxt("Temp");
   delay(600);
-  showStatic("IS");
+  showStaticTxt("IS");
   delay(600);
-  showStatic(tempString);
+  showStaticTxt(tempString);
   delay(1200);
 }
 }
 
 double getTemperature(){
-  t = tempAndHumiditySensor.readTemperature();
-  return t;
+  tempDouble = Si7021.readTemperature();
+  tempInt = int (tempDouble);
+  return tempDouble;
 }
 
 double getHumidity(){
-  h = tempAndHumiditySensor.readHumidity();
-  return h;
+  humidityDouble = Si7021.readHumidity();
+  humidityInt = int (humidityDouble);
+  return humidityDouble;
 }
 
 
@@ -313,7 +322,7 @@ else if (stringLength == 3){
   char thirdChar = stringCurrentTime.charAt(2);
     stringCurrentTime = (String)firstChar + ":" + (String)secondChar + (String)thirdChar;
   }
-int notused = showStatic(stringCurrentTime);
+int notused = showStaticTxt(stringCurrentTime);
 } //end displayTime()
 
 void drawPixel(int row, int col){
@@ -357,7 +366,7 @@ void initialTestSequence(){
 /*
  * Display a static message
  */
-int showStatic(String message){
+int showStaticTxt(String message){
 
   fullBuffer.clear();
   clearImmediateBuffer();
