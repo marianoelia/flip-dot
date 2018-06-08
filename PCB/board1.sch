@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="8.6.0">
+<eagle version="9.0.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -17698,8 +17698,8 @@ Source: TDK, e531_slf7045.pdf</description>
 <part name="J1" library="SparkFun-Connectors" deviceset="POWER_JACK" device="SMD" value="5.5x2.1mm Barrel"/>
 <part name="C1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="C-US" device="C0805" package3d_urn="urn:adsk.eagle:package:23617/1" value="100nF"/>
 <part name="R1" library="rcl" library_urn="urn:adsk.eagle:library:334" deviceset="R-US_" device="R0805" package3d_urn="urn:adsk.eagle:package:23553/1" value="4.7k"/>
-<part name="U$2" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="FIDUCIAL" device=""/>
-<part name="U$3" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="FIDUCIAL" device=""/>
+<part name="FID2" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="FIDUCIAL" device=""/>
+<part name="FID1" library="adafruit" library_urn="urn:adsk.eagle:library:420" deviceset="FIDUCIAL" device=""/>
 <part name="D1" library="standardparts" deviceset="LED" device=".0805"/>
 <part name="POWER1" library="SparkFun-Connectors" deviceset="CONN_02" device="5MM"/>
 <part name="POWER2" library="SparkFun-Connectors" deviceset="CONN_02" device="5MM"/>
@@ -17776,8 +17776,8 @@ Source: TDK, e531_slf7045.pdf</description>
 <instance part="J1" gate="G$1" x="50.8" y="68.58"/>
 <instance part="C1" gate="G$1" x="223.52" y="17.78"/>
 <instance part="R1" gate="G$1" x="180.34" y="76.2" rot="R180"/>
-<instance part="U$2" gate="G$1" x="182.88" y="53.34"/>
-<instance part="U$3" gate="G$1" x="172.72" y="53.34"/>
+<instance part="FID2" gate="G$1" x="182.88" y="53.34"/>
+<instance part="FID1" gate="G$1" x="172.72" y="53.34"/>
 <instance part="D1" gate="G$1" x="190.5" y="76.2"/>
 <instance part="POWER1" gate="G$1" x="10.16" y="60.96"/>
 <instance part="POWER2" gate="G$1" x="10.16" y="50.8"/>

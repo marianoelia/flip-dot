@@ -138,13 +138,14 @@ uint8_t immediateBuffer[28] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 uint8_t futureBuffer[28] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 std::vector <uint8_t> fullBuffer;
 retained std::vector <char> modesArray;
+retained int currentTimeZone;
 
 // Cloud functions
 int handleModes(String command);
 int showStaticTxtTxt(String message);
 int scroll(String message);
 int wiggleText(String message);
-
+int changeTimeZone(String message);
 
 //Software Timers
 Timer tempTimer(2000, getTemperature);
