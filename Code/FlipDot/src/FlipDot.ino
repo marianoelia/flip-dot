@@ -4,13 +4,15 @@
  * Author: Mariano Elia
  * Date: July 2018
  */
+ STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY)); //Enable the use of retained variables upon poweroff
 
 #include <vector>
 #include <string>
+#include <math.h>
 #include "Adafruit_Si7021.h"
 Adafruit_Si7021 Si7021 = Adafruit_Si7021();
-double humidityDouble, tempDouble;
-int humidityInt, tempInt;
+double humidityDouble, temperatureDouble;
+int humidityInt, temperatureInt;
 
 int scrollDelay = 80;
 
@@ -165,7 +167,8 @@ void setup() {
 Particle.function("Scrolling", scroll);
 Particle.function("Static", showStaticTxt);
 Particle.function("Wiggle", wiggleText);
-Particle.variable("Temp", tempDouble);
+Particle.function("TimeZone", changeTimeZone);
+Particle.variable("Temp", temperatureDouble);
 Particle.variable("Humidity", humidityDouble);
 
 
@@ -174,17 +177,18 @@ Particle.variable("Humidity", humidityDouble);
 
 int i = 0;
 void loop() {
- displayTime(12, -4);
+ displayTime(12, currentTimeZone);
  getTemperature();
  getHumidity();
  delay(10000);
- displayTemp("quick");
+ displayTemperature("quick");
  delay(1000);
-
+ displayHumidity("quick");
+ delay(1000);
  /*
   delay(1000);
 t = getTemperature();
-displayTemp("static");
+displayTemperature("static");
 
 //delay(1000);
 showStaticTxt("ghil");
@@ -202,7 +206,7 @@ showStaticTxt("asdfasldf");
     int temp = (int)t;
     Serial.println("displayScrollingTemp");
 //  int na = scroll()
-  displayTemp("static");
+  displayTemperature("static");
    i=0;
   }
 */
@@ -221,13 +225,13 @@ Serial.println("Finished");
 } //End Loop
 
 
-void displayTemp(String displayType){
+void displayTemperature(String displayType){
   getTemperature(); //put
-  String tempString = String(tempInt);
+  String tempStringInt = String(temperatureInt);
+  String tempStringDouble = String(temperatureDouble, 1);
 
   if(displayType=="scrolling"){
   String tempString = "The temp is ";
-
   tempString.concat(tempString);
   Serial.print("The string to be printed is: ");
   Serial.println(tempString);
@@ -235,7 +239,7 @@ void displayTemp(String displayType){
 }
 else if(displayType=="quick"){
   String tempString = "T:";
-  tempString.concat(tempInt);
+  tempString.concat(tempStringDouble);
   showStaticTxt(tempString);
   delay(2000);
 }
@@ -246,23 +250,67 @@ else {
   delay(600);
   showStaticTxt("IS");
   delay(600);
-  showStaticTxt(tempString);
+  showStaticTxt(tempStringDouble);
   delay(1200);
 }
 }
 
+
+void displayHumidity(String displayType){
+  getHumidity();
+  String humStringInt = String(humidityInt);
+  String humStringDouble = String(humidityDouble, 1);
+
+  if(displayType=="scrolling"){
+  String humidityString = "The humidity is ";
+  humidityString.concat(humStringDouble);
+  scroll(humidityString);
+}
+else if(displayType=="quick"){
+  String humString = "H:";
+  humString.concat(humStringDouble);
+  showStaticTxt(humString);
+  delay(2000);
+}
+else {
+  showStaticTxt("The");
+  delay(600);
+  showStaticTxt("Humidity");
+  delay(600);
+  showStaticTxt("IS");
+  delay(600);
+  showStaticTxt(humStringDouble);
+  delay(1200);
+}
+}
 double getTemperature(){
-  tempDouble = Si7021.readTemperature();
-  tempInt = int (tempDouble);
-  return tempDouble;
+double checkTransmission = Si7021.readTemperature();
+if (checkTransmission<129 && checkTransmission>127){
+  //error in transmission resulting in value of 128
+}
+else{
+  temperatureDouble = checkTransmission;
+  temperatureInt = int (temperatureDouble);
+}
+  return temperatureDouble;
 }
 
 double getHumidity(){
-  humidityDouble = Si7021.readHumidity();
+  double checkTransmission = Si7021.readHumidity();
+  if (checkTransmission<129 && checkTransmission>127){
+    //error in transmission resulting in value of 128.XX
+  }
+  else{
+  humidityDouble = checkTransmission;
   humidityInt = int (humidityDouble);
+}
   return humidityDouble;
 }
 
+int changeTimeZone(String command){
+  currentTimeZone = (int) command.toInt();
+return 1;
+}
 
 int handleModes(String command){
 //  String commandCopy = command;
@@ -288,7 +336,7 @@ int hello = scroll((String)command);
 
 //  Serial.println(modesArray)
 
-  return 5;
+  return 1;
 
 }
 
