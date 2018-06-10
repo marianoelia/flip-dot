@@ -285,7 +285,7 @@ else {
 }
 double getTemperature(){
 double checkTransmission = Si7021.readTemperature();
-if (checkTransmission<129 && checkTransmission>127){
+if (checkTransmission>60){
   //error in transmission resulting in value of 128
 }
 else{
@@ -297,7 +297,7 @@ else{
 
 double getHumidity(){
   double checkTransmission = Si7021.readHumidity();
-  if (checkTransmission<129 && checkTransmission>127){
+  if (checkTransmission>80){
     //error in transmission resulting in value of 128.XX
   }
   else{
