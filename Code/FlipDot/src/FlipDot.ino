@@ -4,7 +4,8 @@
  * Author: Mariano Elia
  * Date: July 2018
  */
- STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY)); //Enable the use of retained variables upon poweroff
+
+STARTUP(System.enableFeature(FEATURE_RETAINED_MEMORY)); //Enable the use of retained variables upon poweroff
 
 #include <vector>
 #include <string>
@@ -13,6 +14,11 @@
 Adafruit_Si7021 Si7021 = Adafruit_Si7021();
 double humidityDouble, temperatureDouble;
 int humidityInt, temperatureInt;
+//Useful macros for setting/clearing/toggling bits
+#define BV(bit) (1 << bit) //shifts a '1' bit left by a given value
+#define setBit(byte, bit) (byte |= BV(bit)) //sets a bit at a given location
+#define clearBit(byte, bit)  (byte &= ~BV(bit)) //clear a bit to 0 at a given location
+#define toggleBit(byte, bit) (byte ^= BV(bit)) //changes the state of a bit from 0->1 or 1->0
 
 int scrollDelay = 80;
 
@@ -159,7 +165,6 @@ void setup() {
   updateDisplay(); //clear the display
   initialTestSequence();
   Serial.print("hello world!");
-
   Si7021.begin();
 
  // Cloud functions must return int and take one String
@@ -170,19 +175,20 @@ Particle.function("Wiggle", wiggleText);
 Particle.function("TimeZone", changeTimeZone);
 Particle.variable("Temp", temperatureDouble);
 Particle.variable("Humidity", humidityDouble);
-
-
-
 }
 
 int i = 0;
 void loop() {
  displayTime(12, currentTimeZone);
- getTemperature();
- getHumidity();
+ //getTemperature();
+ //getHumidity();
  delay(10000);
+ crumbleTransition();
+ updateDisplay();
+ delay(500);
  displayTemperature("quick");
  delay(1000);
+ checkerBoardTransisiton();
  displayHumidity("quick");
  delay(1000);
  /*
@@ -221,9 +227,15 @@ scroll(time);
 Serial.println("Finished");
 */
 
-
 } //End Loop
 
+void crumbleTransition(){
+  for(int i = 0; i<27; i++){
+    if(immediateBuffer[i] & 0b1000000 == 64){
+      immediateBuffer[i] &= ~0b1000000;
+    }
+  }
+}
 
 void displayTemperature(String displayType){
   getTemperature(); //put
@@ -283,6 +295,7 @@ else {
   delay(1200);
 }
 }
+
 double getTemperature(){
 double checkTransmission = Si7021.readTemperature();
 if (checkTransmission>60){
@@ -796,7 +809,6 @@ for(int i = 0; i < 28; i++){
 }
 updateDisplay();
 delay(500);
-
 }
 
 
@@ -813,7 +825,6 @@ for(int i = 0; i<28; i++){
 }
 
 void swipeTopToBottomTransition(){
-
   for(int j = 0; j<7; j++){
     for(int i = 0; i<28; i++){
       if(j != 0)
